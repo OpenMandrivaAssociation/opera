@@ -1,6 +1,5 @@
 %define name opera
 %define version 10.10
-%define fullname %{name}-%{version}.gcc4-shared-qt3.x86_64
 %define release %mkrel 1
 %define buildnb 4742
 
@@ -8,7 +7,8 @@ Summary:	Opera for linux Web browser
 Name: 		%{name}
 Version: 	%{version}
 Release: 	%{release}
-Source0: 	%{fullname}.tar.bz2
+Source:		%{name}-%{version}.gcc4-shared-qt3.i386.tar.bz2
+Source0: 	%{name}-%{version}.gcc4-shared-qt3.x86_64.tar.bz2
 Source1: 	opera-icons.tar.bz2
 Source2: 	opera6.adr.bz2
 Source3: be.lng
@@ -67,7 +67,12 @@ for Linux.
 
 %prep
 
+%ifarch %ix86
+%setup -n  %{name}-%{version}-%{buildnb}.gcc4-shared-qt3.i.386
+%endif
+%ifarch %x86_64
 %setup -n  %{name}-%{version}-%{buildnb}.gcc4-shared-qt3.x86_64
+%endif
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -76,7 +81,9 @@ grep -v '.license'  install.sh | tee install2.sh > /dev/null
 
 chmod 755 install2.sh
 
-./install2.sh --prefix=$RPM_BUILD_ROOT --exec_prefix=$RPM_BUILD_ROOT%_prefix/X11R6/bin --wrapperdir=$RPM_BUILD_ROOT%_bindir/ --sharedir=$RPM_BUILD_ROOT%_datadir/%name --plugindir=$RPM_BUILD_ROOT%_libdir/opera/plugins --docdir=$RPM_BUILD_ROOT%_docdir/%name-%version
+./install2.sh --prefix=$RPM_BUILD_ROOT --exec_prefix=$RPM_BUILD_ROOT%_prefix/X11R6/bin \
+              --wrapperdir=$RPM_BUILD_ROOT%_bindir/ --sharedir=$RPM_BUILD_ROOT%_datadir/%name \
+              --plugindir=$RPM_BUILD_ROOT%_libdir/opera/plugins --docdir=$RPM_BUILD_ROOT%_docdir/%name-%version
 
 # install mandrakized bookmarks file
 bzcat %{SOURCE2} > $RPM_BUILD_ROOT%_datadir/%name/opera6.adr
