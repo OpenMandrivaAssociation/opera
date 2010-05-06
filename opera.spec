@@ -7,8 +7,11 @@ Summary:	Opera for linux Web browser
 Name: 		%{name}
 Version: 	%{version}
 Release: 	%{release}
-Source:		%{name}-%{version}.gcc4-shared-qt3.i386.tar.bz2
+%ifarch x86_64
 Source0: 	%{name}-%{version}.gcc4-shared-qt3.x86_64.tar.bz2
+%else
+Source0:	%{name}-%{version}.gcc4-shared-qt3.i386.tar.bz2
+%endif
 Source1: 	opera-icons.tar.bz2
 Source2: 	opera6.adr.bz2
 Source3: be.lng
@@ -67,11 +70,10 @@ for Linux.
 
 %prep
 
-%ifarch %ix86
-%setup -n  %{name}-%{version}-%{buildnb}.gcc4-shared-qt3.i.386
-%endif
-%ifarch %x86_64
+%ifarch x86_64
 %setup -n  %{name}-%{version}-%{buildnb}.gcc4-shared-qt3.x86_64
+%else
+%setup -n  %{name}-%{version}-%{buildnb}.gcc4-shared-qt3.i386
 %endif
 
 %install
@@ -89,7 +91,7 @@ chmod 755 install2.sh
 bzcat %{SOURCE2} > $RPM_BUILD_ROOT%_datadir/%name/opera6.adr
 
 # install languages
-cp %SOURCE4 %SOURCE5 %SOURCE6 %SOURCE7 %SOURCE8 %SOURCE9 \
+cp %SOURCE3 %SOURCE4 %SOURCE5 %SOURCE6 %SOURCE7 %SOURCE8 %SOURCE9 \
 %SOURCE10 %SOURCE11 %SOURCE12 %SOURCE13 %SOURCE14 %SOURCE15 %SOURCE16 \
 %SOURCE17 %SOURCE18 %SOURCE19 %SOURCE20 %SOURCE21 %SOURCE22 %SOURCE23 \
 %SOURCE24 %SOURCE25 %SOURCE26 %SOURCE27 %SOURCE28 %SOURCE29 %SOURCE30 \
