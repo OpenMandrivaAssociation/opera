@@ -3,106 +3,63 @@
 %define release %mkrel 1
 %define buildnb 4742
 
-Summary:	Opera for linux Web browser
+%define tarball_base %{name}-%{version}.gcc4-shared-qt3
+%define dirname %{name}-%{version}-%{buildnb}.gcc4-shared-qt3.%{_arch}
+
+%ifarch x86_64
+# Exclude 32-bit requires on x86_64; plugins will pull them.
+%define _exclude_files_from_autoreq ^%{_libdir}/%{name}/operapluginwrapper-ia32-linux$
+%endif
+
+Summary:	Opera Web Browser for Linux
 Name: 		%{name}
 Version: 	%{version}
 Release: 	%{release}
-%ifarch x86_64
-Source0: 	%{name}-%{version}.gcc4-shared-qt3.x86_64.tar.bz2
-%else
-Source0:	%{name}-%{version}.gcc4-shared-qt3.i386.tar.bz2
-%endif
-Source1: 	opera-icons.tar.bz2
-Source2: 	opera6.adr.bz2
-Source3: be.lng
-Source4: bg.lng
-Source5: cs.lng
-Source6: da.lng
-Source7: de.lng
-Source8: el.lng
-Source9: en-GB.lng
-Source10: en.lng
-Source11: es-ES.lng
-Source12: es-LA.lng
-Source13: et.lng
-Source14: fi.lng
-Source15: fr-CA.lng
-Source16: fr.lng
-Source17: fy.lng
-Source18: hi.lng
-Source19: hr.lng
-Source20: hu.lng
-Source21: id.lng
-Source22: it.lng
-Source23: ja.lng
-Source24: ka.lng
-Source25: ko.lng
-Source26: lt.lng
-Source27: mk.lng
-Source28: nb.lng
-Source29: nl.lng
-Source30: nn.lng
-Source31: pl.lng
-Source32: pt-BR.lng
-Source33: pt.lng
-Source34: ru.lng
-Source35: sv.lng
-Source36: ta.lng
-Source37: te.lng
-Source38: tr.lng
-Source39: uk.lng
-Source40: zh-cn.lng
-Source41: zh-tw.lng
-Source42: ro.lng
-Source43: sk.lng
-Source44: sr.lng
+Source0:	%{tarball_base}.i386.tar.bz2
+Source1: 	%{tarball_base}.x86_64.tar.bz2
+Source2: 	opera6.adr
 License: 	Commercial
-Url:		http://www.opera.com
+Url:		http://www.opera.com/
 Group: 		Networking/WWW
 BuildRoot: 	%{_tmppath}/%{name}-buildroot
-Requires:	liblesstif2
+ExclusiveArch:	%ix86 x86_64
+BuildRequires:	desktop-file-utils
 
 %description
 Opera for Linux is an alternative, lightweight, X11-based Web browser 
 for Linux. 
 
-- Static Version -
-
 %prep
-
 %ifarch x86_64
-%setup -n  %{name}-%{version}-%{buildnb}.gcc4-shared-qt3.x86_64
+%setup -q -n %dirname -T -b 1
 %else
-%setup -n  %{name}-%{version}-%{buildnb}.gcc4-shared-qt3.i386
+%setup -q -n %dirname -T -a 0
 %endif
+
+# extract upstream .desktop file
+gawk '{ if (section) print } /^}/ { section=0 } /desktop_content\(\)/ { section=1 }' install.sh > shortcut-script
+bash shortcut-script xdg | sed 's,opera.png,opera,' > opera.desktop
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-grep -v '.license'  install.sh | tee install2.sh > /dev/null
-
-chmod 755 install2.sh
-
-./install2.sh --prefix=$RPM_BUILD_ROOT --exec_prefix=$RPM_BUILD_ROOT%_prefix/X11R6/bin \
+./install.sh --prefix=$RPM_BUILD_ROOT%_prefix --exec_prefix=$RPM_BUILD_ROOT%_libdir/%name \
               --wrapperdir=$RPM_BUILD_ROOT%_bindir/ --sharedir=$RPM_BUILD_ROOT%_datadir/%name \
-              --plugindir=$RPM_BUILD_ROOT%_libdir/opera/plugins --docdir=$RPM_BUILD_ROOT%_docdir/%name-%version
+              --plugindir=$RPM_BUILD_ROOT%_libdir/opera/plugins --docdir=$PWD/rpmdocs \
+              --mandir=%{buildroot}%{_mandir}
+
+install -m755 -d %{buildroot}%{_sysconfdir}
+install -m644 etc/* %{buildroot}%{_sysconfdir}
 
 # install mandrakized bookmarks file
-bzcat %{SOURCE2} > $RPM_BUILD_ROOT%_datadir/%name/opera6.adr
-
-# install languages
-cp %SOURCE3 %SOURCE4 %SOURCE5 %SOURCE6 %SOURCE7 %SOURCE8 %SOURCE9 \
-%SOURCE10 %SOURCE11 %SOURCE12 %SOURCE13 %SOURCE14 %SOURCE15 %SOURCE16 \
-%SOURCE17 %SOURCE18 %SOURCE19 %SOURCE20 %SOURCE21 %SOURCE22 %SOURCE23 \
-%SOURCE24 %SOURCE25 %SOURCE26 %SOURCE27 %SOURCE28 %SOURCE29 %SOURCE30 \
-%SOURCE31 %SOURCE32 %SOURCE33 %SOURCE34 %SOURCE35 %SOURCE36 %SOURCE37 \
-%SOURCE38 %SOURCE39 %SOURCE40 %SOURCE41 %SOURCE42 %SOURCE43 %SOURCE44 \
-$RPM_BUILD_ROOT%_datadir/%name/locale
+install -m644 %{SOURCE2} $RPM_BUILD_ROOT%_datadir/%name/opera6.adr
 
 # remove buildroot path copied in the wrapper by the install script
 perl -pi -e "s|$RPM_BUILD_ROOT||g" $RPM_BUILD_ROOT%_bindir/opera
-perl -pi -e "s|\/usr\/lib ||g" $RPM_BUILD_ROOT%_bindir/opera
+# remove builddir
+perl -pi -e "s|$PWD|%{_bindir}|" %{buildroot}%{_bindir}/opera
 
+%if %{mdkversion} < 200700
 # Mandrake menu entry
 (cd $RPM_BUILD_ROOT
 mkdir -p ./usr/lib/menu
@@ -118,114 +75,99 @@ section="Networking/WWW" \
 xdg="true"
 EOF
 )
+%endif
 
-mkdir -p %{buildroot}%{_datadir}/applications
-cat > %{buildroot}%{_datadir}/applications/mandriva-%{name}.desktop << EOF
-[Desktop Entry]
-Name=Opera
-Comment=Opera for linux Web browser
-Exec=opera
-Icon=%{name}
-Terminal=false
-Type=Application
-Categories=X-MandrivaLinux-Internet-WebBrowsers;Network;WebBrowser;X-MandrivaLinux-CrossDesktop;
-EOF
+desktop-file-install --dir %{buildroot}%{_datadir}/applications \
+	--add-category=X-MandrivaLinux-CrossDesktop \
+	--add-category=X-MandrivaLinux-Internet-WebBrowsers \
+	--remove-category=Application \
+	%{name}.desktop
 
+# install icons (install.sh misses these when run with --prefix)
+install -d -m755 %{buildroot}%{_iconsdir}
+cp -a usr/share/icons/hicolor %{buildroot}%{_iconsdir}
 
-# mdk icons
-install -d $RPM_BUILD_ROOT%{_iconsdir}
-bzip2 -dc %{SOURCE1} | tar xvf - -C $RPM_BUILD_ROOT%{_iconsdir}
-install -m 644 %{SOURCE2}  $RPM_BUILD_ROOT%{_datadir}/%{name}
+# legacy icon locations
+install -d -m755 %{buildroot}%{_miconsdir} %{buildroot}%{_liconsdir}
+cp -a %{buildroot}%{_iconsdir}/hicolor/16x16/apps/opera.png %{buildroot}%{_miconsdir}
+cp -a %{buildroot}%{_iconsdir}/hicolor/32x32/apps/opera.png %{buildroot}%{_iconsdir}
+cp -a %{buildroot}%{_iconsdir}/hicolor/48x48/apps/opera.png %{buildroot}%{_liconsdir}
 
-# remove misplaced license file
-rm -rf $RPM_BUILD_ROOT%_docdir/LICENSE
-
-# fix doc link
-rm -rf $RPM_BUILD_ROOT/%_docdir/%name-%version/help
-#ln -sf %_docdir/%name-%version/help $RPM_BUILD_ROOT/%_docdir/%name-%version/help
-
-# remove openmotif-3 wrapper
-#rm $RPM_BUILD_ROOT/%_libdir/opera/plugins/operamotifwrapper-3
-
-# remove wrong opera.jar reference
-perl -pi -e "s|$RPM_BUILD_ROOT\/usr\/share\/opera\/java\/\/opera.jar|file:\/\/\/usr\/share\/opera\/java\/opera.jar|g" $RPM_BUILD_ROOT%_datadir/opera/java/opera.policy
-
-# mode man file
-mkdir -p $RPM_BUILD_ROOT%_mandir/man1
-mv $RPM_BUILD_ROOT/share/man/man1/* $RPM_BUILD_ROOT%_mandir/man1/
-
-%post 
+%if %{mdkversion} < 200900
+%post
+%{update_icon_cache hicolor}
+%{update_desktop_database}
 %{update_menus}
-/sbin/ldconfig
 
-%postun 
+%postun
+%{clean_icon_cache hicolor}
+%{clean_desktop_database}
 %{clean_menus}
-/sbin/ldconfig
+%endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-#%doc LICENSE
-%_bindir/*
-%_prefix/X11R6/bin/*
-#
-#%_prefix/X11R6/lib/*
+%doc rpmdocs/*
+%config(noreplace) %{_sysconfdir}/operaprefs_default.ini
+%config(noreplace) %{_sysconfdir}/operaprefs_fixed.ini
+%_bindir/opera
 %_libdir/opera
-#%_libdir/opera*
-#
 %_datadir/%name
 
+%if %{mdkversion} < 200700
 %_menudir/%name
-%_iconsdir/opera*
-%_iconsdir/mini/*
-%_iconsdir/large/*
-%_datadir/applications/*
-#
-%_docdir/%name-%version
-%_mandir/man1/*
-# langs
-#%_datadir/%name/locale/be.lng
-%_datadir/%name/locale/bg.lng
-%_datadir/%name/locale/cs.lng
-%_datadir/%name/locale/da.lng
-%_datadir/%name/locale/de.lng
-%_datadir/%name/locale/el.lng
-%_datadir/%name/locale/en-GB.lng
-%_datadir/%name/locale/en.lng
-%_datadir/%name/locale/es-ES.lng
-%_datadir/%name/locale/es-LA.lng
-%_datadir/%name/locale/et.lng
-%_datadir/%name/locale/fi.lng
-%_datadir/%name/locale/fr-CA.lng
-%_datadir/%name/locale/fr.lng
-%_datadir/%name/locale/fy.lng
-%_datadir/%name/locale/hi.lng
-%_datadir/%name/locale/hr.lng
-%_datadir/%name/locale/hu.lng
-%_datadir/%name/locale/id.lng
-%_datadir/%name/locale/it.lng
-%_datadir/%name/locale/ja.lng
-%_datadir/%name/locale/ka.lng
-%_datadir/%name/locale/ko.lng
-%_datadir/%name/locale/lt.lng
-%_datadir/%name/locale/mk.lng
-%_datadir/%name/locale/nb.lng
-%_datadir/%name/locale/nl.lng
-%_datadir/%name/locale/nn.lng
-%_datadir/%name/locale/pl.lng
-%_datadir/%name/locale/pt-BR.lng
-%_datadir/%name/locale/pt.lng
-%_datadir/%name/locale/ru.lng
-%_datadir/%name/locale/sv.lng
-%_datadir/%name/locale/ta.lng
-%_datadir/%name/locale/te.lng
-%_datadir/%name/locale/tr.lng
-%_datadir/%name/locale/uk.lng
-%_datadir/%name/locale/zh-cn.lng
-%_datadir/%name/locale/zh-tw.lng
-%_datadir/%name/locale/ro.lng
-%_datadir/%name/locale/sk.lng
-%_datadir/%name/locale/sr.lng
+%endif
 
+%_iconsdir/opera.png
+%_iconsdir/mini/opera.png
+%_iconsdir/large/opera.png
+%_iconsdir/hicolor/*/apps/%{name}.*
+%_datadir/applications/%{name}.desktop
+#
+
+%_mandir/man1/opera*
+# langs
+%lang(be) %{_datadir}/%name/locale/be
+%lang(bg) %{_datadir}/%name/locale/bg
+%lang(cs) %{_datadir}/%name/locale/cs
+%lang(da) %{_datadir}/%name/locale/da
+%lang(de) %{_datadir}/%name/locale/de
+%lang(el) %{_datadir}/%name/locale/el
+%lang(es) %{_datadir}/%name/locale/es-ES
+%lang(es) %{_datadir}/%name/locale/es-LA
+%lang(et) %{_datadir}/%name/locale/et
+%lang(fi) %{_datadir}/%name/locale/fi
+%lang(fr) %{_datadir}/%name/locale/fr
+%lang(fr_CA) %{_datadir}/%name/locale/fr-CA
+%lang(fy) %{_datadir}/%name/locale/fy
+%lang(hi) %{_datadir}/%name/locale/hi
+%lang(hu) %{_datadir}/%name/locale/hu
+%lang(hr) %{_datadir}/%name/locale/hr
+%lang(id) %{_datadir}/%name/locale/id
+%lang(it) %{_datadir}/%name/locale/it
+%lang(ja) %{_datadir}/%name/locale/ja
+%lang(ka) %{_datadir}/%name/locale/ka
+%lang(ko) %{_datadir}/%name/locale/ko
+%lang(lt) %{_datadir}/%name/locale/lt
+%lang(mk) %{_datadir}/%name/locale/mk
+%lang(nn) %{_datadir}/%name/locale/nn
+%lang(nb) %{_datadir}/%name/locale/nb
+%lang(nl) %{_datadir}/%name/locale/nl
+%lang(pl) %{_datadir}/%name/locale/pl
+%lang(pt) %{_datadir}/%name/locale/pt
+%lang(pt_BR) %{_datadir}/%name/locale/pt-BR
+%lang(ro) %{_datadir}/%name/locale/ru
+%lang(ru) %{_datadir}/%name/locale/ru
+%lang(sk) %{_datadir}/%name/locale/sv
+%lang(sr) %{_datadir}/%name/locale/sv
+%lang(sv) %{_datadir}/%name/locale/sv
+%lang(te) %{_datadir}/%name/locale/te
+%lang(ta) %{_datadir}/%name/locale/ta
+%lang(tr) %{_datadir}/%name/locale/tr
+%lang(uk) %{_datadir}/%name/locale/uk
+%lang(zh_CN) %{_datadir}/%name/locale/zh-cn
+%lang(zh_HK) %{_datadir}/%name/locale/zh-hk
+%lang(zh_TW) %{_datadir}/%name/locale/zh-tw
