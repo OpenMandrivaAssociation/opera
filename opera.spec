@@ -33,7 +33,7 @@ for Linux.
 %ifarch x86_64
 %setup -q -n %dirname -T -b 1
 %else
-%setup -q -n %dirname -T -a 0
+%setup -q -n %dirname -T -b 0
 %endif
 
 # extract upstream .desktop file
