@@ -1,10 +1,10 @@
 %define name opera
-%define version 10.10
+%define version 10.60
 %define release %mkrel 1
-%define buildnb 4742
+%define buildnb 6386
 
-%define tarball_base %{name}-%{version}.gcc4-shared-qt3
-%define dirname %{name}-%{version}-%{buildnb}.gcc4-shared-qt3.%{_arch}
+%define tarball_base %{name}-%{version}-%{buildnb}
+%define dirname %{name}-%{version}-%{buildnb}.%{_arch}.linux
 
 %ifarch x86_64
 # Exclude 32-bit requires on x86_64; plugins will pull them.
@@ -15,19 +15,38 @@ Summary:	Opera Web Browser for Linux
 Name: 		%{name}
 Version: 	%{version}
 Release: 	%{release}
-Source0:	%{tarball_base}.i386.tar.bz2
-Source1: 	%{tarball_base}.x86_64.tar.bz2
-Source2: 	opera6.adr
+Source0:	http://get.opera.com/pub/opera/linux/1060/%{tarball_base}.i386.linux.tar.bz2
+Source1: 	http://get.opera.com/pub/opera/linux/1060/%{tarball_base}.x86_64.linux.tar.bz2
+Source2: 	bookmarks.adr
 License: 	Commercial
 Url:		http://www.opera.com/
 Group: 		Networking/WWW
 BuildRoot: 	%{_tmppath}/%{name}-buildroot
 ExclusiveArch:	%ix86 x86_64
 BuildRequires:	desktop-file-utils
+Requires:	liboperatoolkit = %version
 
 %description
 Opera for Linux is an alternative, lightweight, X11-based Web browser 
 for Linux. 
+
+%package -n liboperagtk
+Summary:	Opera Dialog Tookit GTK
+Group:		Networking/WWW
+Requires:	%name = %version
+Provides:	liboperatoolkit = %version
+
+%description -n liboperagtk
+This package provides GTK file selector for Opera.
+
+%package -n liboperakde4
+Summary:	Opera Dialog Tookit KDE4
+Group:		Networking/WWW
+Requires:	%name = %version
+Provides:	liboperatoolkit = %version
+
+%description -n liboperakde4
+This package provides KDE4 file selector for Opera.
 
 %prep
 %ifarch x86_64
@@ -36,99 +55,54 @@ for Linux.
 %setup -q -n %dirname -T -b 0
 %endif
 
-# extract upstream .desktop file
-gawk '{ if (section) print } /^}/ { section=0 } /desktop_content\(\)/ { section=1 }' install.sh > shortcut-script
-bash shortcut-script xdg | sed 's,opera.png,opera,' > opera.desktop
+# use buildroot
+sed -i -e 's#/usr/local#%{buildroot}/usr#' install
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-./install.sh --prefix=$RPM_BUILD_ROOT%_prefix --exec_prefix=$RPM_BUILD_ROOT%_libdir/%name \
-              --wrapperdir=$RPM_BUILD_ROOT%_bindir/ --sharedir=$RPM_BUILD_ROOT%_datadir/%name \
-              --plugindir=$RPM_BUILD_ROOT%_libdir/opera/plugins --docdir=$PWD/rpmdocs \
-              --mandir=%{buildroot}%{_mandir}
+./install --text --quiet --system --force
 
-install -m755 -d %{buildroot}%{_sysconfdir}
-install -m644 etc/* %{buildroot}%{_sysconfdir}
+rm -f %buildroot%{_datadir}/applications/mimeinfo.cache
+rm -f %buildroot%{_bindir}/uninstall-opera
+rm -fr %buildroot%{_datadir}/doc/opera
+rm -fr %buildroot%{_datadir}/mime
+
+sed -i -e 's#%{buildroot}##' %buildroot%{_bindir}/*
 
 # install mandrakized bookmarks file
-install -m644 %{SOURCE2} $RPM_BUILD_ROOT%_datadir/%name/opera6.adr
-
-# remove buildroot path copied in the wrapper by the install script
-perl -pi -e "s|$RPM_BUILD_ROOT||g" $RPM_BUILD_ROOT%_bindir/opera
-# remove builddir
-perl -pi -e "s|$PWD|%{_bindir}|" %{buildroot}%{_bindir}/opera
-
-%if %{mdkversion} < 200700
-# Mandrake menu entry
-(cd $RPM_BUILD_ROOT
-mkdir -p ./usr/lib/menu
-cat > ./usr/lib/menu/%{name} << EOF
-?package(%{name}):  \
-command="/usr/bin/opera" \
-icon="%{name}.png" \
-needs="kde" \
-needs="x11" \
-title="Opera" \
-longtitle="Opera Web Browser" \
-section="Networking/WWW" \
-xdg="true"
-EOF
-)
-%endif
+install -m644 %{SOURCE2} %{buildroot}%_datadir/%name/defaults/bookmarks.adr
 
 desktop-file-install --dir %{buildroot}%{_datadir}/applications \
 	--add-category=X-MandrivaLinux-CrossDesktop \
-	--add-category=X-MandrivaLinux-Internet-WebBrowsers \
-	--remove-category=Application \
-	%{name}.desktop
-
-# install icons (install.sh misses these when run with --prefix)
-install -d -m755 %{buildroot}%{_iconsdir}
-cp -a usr/share/icons/hicolor %{buildroot}%{_iconsdir}
-
-# legacy icon locations
-install -d -m755 %{buildroot}%{_miconsdir} %{buildroot}%{_liconsdir}
-cp -a %{buildroot}%{_iconsdir}/hicolor/16x16/apps/opera.png %{buildroot}%{_miconsdir}
-cp -a %{buildroot}%{_iconsdir}/hicolor/32x32/apps/opera.png %{buildroot}%{_iconsdir}
-cp -a %{buildroot}%{_iconsdir}/hicolor/48x48/apps/opera.png %{buildroot}%{_liconsdir}
-
-%if %{mdkversion} < 200900
-%post
-%{update_icon_cache hicolor}
-%{update_desktop_database}
-%{update_menus}
-
-%postun
-%{clean_icon_cache hicolor}
-%{clean_desktop_database}
-%{clean_menus}
-%endif
+	%{buildroot}%{_datadir}/applications/%{name}-browser.desktop
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-%doc rpmdocs/*
-%config(noreplace) %{_sysconfdir}/operaprefs_default.ini
-%config(noreplace) %{_sysconfdir}/operaprefs_fixed.ini
-%_bindir/opera
+%doc share/doc/opera/*
+%_bindir/*
 %_libdir/opera
-%_datadir/%name
-
-%if %{mdkversion} < 200700
-%_menudir/%name
-%endif
-
-%_iconsdir/opera.png
-%_iconsdir/mini/opera.png
-%_iconsdir/large/opera.png
-%_iconsdir/hicolor/*/apps/%{name}.*
-%_datadir/applications/%{name}.desktop
-#
-
-%_mandir/man1/opera*
+%exclude %_libdir/opera/liboperagtk.so
+%exclude %_libdir/opera/liboperakde4.so
+%dir %{_datadir}/opera
+%{_datadir}/opera/encoding.bin
+%{_datadir}/opera/*.dtd
+%{_datadir}/opera/lngcode.txt
+%{_datadir}/opera/package-id.ini
+%{_datadir}/opera/defaults
+%{_datadir}/opera/extra
+%{_datadir}/opera/package
+%{_datadir}/opera/skin
+%{_datadir}/opera/styles
+%{_datadir}/opera/ui
+%{_datadir}/opera/unite
+%{_datadir}/opera/locale/en
+%_iconsdir/*/*/*/*
+%_datadir/applications/*.desktop
+%_mandir/man?/opera*
 # langs
 %lang(be) %{_datadir}/%name/locale/be
 %lang(bg) %{_datadir}/%name/locale/bg
@@ -136,6 +110,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(da) %{_datadir}/%name/locale/da
 %lang(de) %{_datadir}/%name/locale/de
 %lang(el) %{_datadir}/%name/locale/el
+%lang(en_GB) %{_datadir}/%name/locale/en-GB
 %lang(es) %{_datadir}/%name/locale/es-ES
 %lang(es) %{_datadir}/%name/locale/es-LA
 %lang(et) %{_datadir}/%name/locale/et
@@ -159,15 +134,24 @@ rm -rf $RPM_BUILD_ROOT
 %lang(pl) %{_datadir}/%name/locale/pl
 %lang(pt) %{_datadir}/%name/locale/pt
 %lang(pt_BR) %{_datadir}/%name/locale/pt-BR
-%lang(ro) %{_datadir}/%name/locale/ru
+%lang(ro) %{_datadir}/%name/locale/ro
 %lang(ru) %{_datadir}/%name/locale/ru
-%lang(sk) %{_datadir}/%name/locale/sv
-%lang(sr) %{_datadir}/%name/locale/sv
+%lang(sk) %{_datadir}/%name/locale/sk
+%lang(sr) %{_datadir}/%name/locale/sr
 %lang(sv) %{_datadir}/%name/locale/sv
 %lang(te) %{_datadir}/%name/locale/te
 %lang(ta) %{_datadir}/%name/locale/ta
 %lang(tr) %{_datadir}/%name/locale/tr
 %lang(uk) %{_datadir}/%name/locale/uk
+%lang(vi) %{_datadir}/%name/locale/vi
 %lang(zh_CN) %{_datadir}/%name/locale/zh-cn
 %lang(zh_HK) %{_datadir}/%name/locale/zh-hk
 %lang(zh_TW) %{_datadir}/%name/locale/zh-tw
+
+%files -n liboperagtk
+%defattr(-,root,root)
+%{_libdir}/opera/liboperagtk.so
+
+%files -n liboperakde4
+%defattr(-,root,root)
+%{_libdir}/opera/liboperakde4.so
