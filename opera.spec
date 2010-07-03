@@ -30,22 +30,22 @@ Requires:	liboperatoolkit = %version
 Opera for Linux is an alternative, lightweight, X11-based Web browser 
 for Linux. 
 
-%package -n liboperagtk
+%package -n %{_lib}operagtk
 Summary:	Opera Dialog Tookit GTK
 Group:		Networking/WWW
 Requires:	%name = %version
 Provides:	liboperatoolkit = %version
 
-%description -n liboperagtk
+%description -n %{_lib}operagtk
 This package provides GTK file selector for Opera.
 
-%package -n liboperakde4
+%package -n %{_lib}operakde4
 Summary:	Opera Dialog Tookit KDE4
 Group:		Networking/WWW
 Requires:	%name = %version
 Provides:	liboperatoolkit = %version
 
-%description -n liboperakde4
+%description -n %{_lib}operakde4
 This package provides KDE4 file selector for Opera.
 
 %prep
@@ -63,12 +63,16 @@ rm -rf $RPM_BUILD_ROOT
 
 ./install --text --quiet --system --force
 
+%ifarch x86_64
+mv -f %{buildroot}%{_prefix}/lib %{buildroot}%{_libdir}
+%endif
+
 rm -f %buildroot%{_datadir}/applications/mimeinfo.cache
 rm -f %buildroot%{_bindir}/uninstall-opera
 rm -fr %buildroot%{_datadir}/doc/opera
 rm -fr %buildroot%{_datadir}/mime
 
-sed -i -e 's#%{buildroot}##' %buildroot%{_bindir}/*
+sed -i -e 's#%{buildroot}##' -e 's#/usr/lib#%{_libdir}#' %buildroot%{_bindir}/*
 
 # install mandrakized bookmarks file
 install -m644 %{SOURCE2} %{buildroot}%_datadir/%name/defaults/bookmarks.adr
@@ -148,10 +152,10 @@ rm -rf $RPM_BUILD_ROOT
 %lang(zh_HK) %{_datadir}/%name/locale/zh-hk
 %lang(zh_TW) %{_datadir}/%name/locale/zh-tw
 
-%files -n liboperagtk
+%files -n %{_lib}operagtk
 %defattr(-,root,root)
 %{_libdir}/opera/liboperagtk.so
 
-%files -n liboperakde4
+%files -n %{_lib}operakde4
 %defattr(-,root,root)
 %{_libdir}/opera/liboperakde4.so
