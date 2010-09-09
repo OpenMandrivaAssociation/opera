@@ -32,6 +32,10 @@ Source0:	http://get.opera.com/pub/opera/linux/%{shortver}/%{tarball_base}.i386.l
 Source1: 	http://get.opera.com/pub/opera/linux/%{shortver}/%{tarball_base}.x86_64.linux.tar.bz2
 Source2: 	bookmarks.adr
 Patch0:		opera-destdir.patch
+# StartupNotify does not work correctly when opera is already running;
+# the already-existing window is activated and a new tab is opened
+# and the completion signal is not sent.
+Patch1:		opera-disable-startupnotify.patch
 License: 	Freeware
 Url:		http://www.opera.com/
 Group: 		Networking/WWW
@@ -49,6 +53,7 @@ Opera for Linux is an alternative feature-rich Web browser.
 %setup -q -n %dirname -T -b 0
 %endif
 %patch0 -p1
+%patch1 -p1
 
 %install
 rm -rf $RPM_BUILD_ROOT
