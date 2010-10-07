@@ -1,13 +1,13 @@
 %define name opera
 %define version 10.62
-%define rel	1
+%define rel	2
 %define snap	0
 %define buildnb 6438
 
 %define tarball_base %{name}-%{version}-%{buildnb}
 %define dirname %{tarball_base}.%{_arch}.linux
 
-%define arch_exclude_files_from_autoreq %nil
+%define arch_exclude_files_from_autoreq ^$
 %ifarch x86_64
 # Exclude 32-bit requires on x86_64; plugins will pull them.
 %define arch_exclude_files_from_autoreq ^%{_libdir}/%{name}/operapluginwrapper-ia32-linux$
