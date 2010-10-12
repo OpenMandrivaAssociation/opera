@@ -1,8 +1,8 @@
 %define name opera
-%define version 10.62
-%define rel	2
+%define version 10.63
+%define rel	1
 %define snap	0
-%define buildnb 6438
+%define buildnb 6450
 
 %define tarball_base %{name}-%{version}-%{buildnb}
 %define dirname %{tarball_base}.%{_arch}.linux
