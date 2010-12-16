@@ -31,10 +31,6 @@ Release:	%mkrel %rel
 Source0:	http://get.opera.com/pub/opera/linux/%{shortver}/%{tarball_base}.i386.linux.tar.xz
 Source1: 	http://get.opera.com/pub/opera/linux/%{shortver}/%{tarball_base}.x86_64.linux.tar.xz
 Source2: 	bookmarks.adr
-# StartupNotify does not work correctly when opera is already running;
-# the already-existing window is activated and a new tab is opened
-# and the completion signal is not sent.
-Patch1:		opera-disable-startupnotify.patch
 License: 	Freeware
 Url:		http://www.opera.com/
 Group: 		Networking/WWW
@@ -51,7 +47,6 @@ Opera for Linux is an alternative feature-rich Web browser.
 %else
 %setup -q -n %dirname -T -b 0
 %endif
-%patch1 -p1
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -71,6 +66,13 @@ install -m644 %{SOURCE2} %{buildroot}%_datadir/%name/defaults/bookmarks.adr
 desktop-file-install --dir %{buildroot}%{_datadir}/applications \
 	--add-category=X-MandrivaLinux-CrossDesktop \
 	%{buildroot}%{_datadir}/applications/%{name}-browser.desktop
+
+# StartupNotify does not work correctly when opera is already running;
+# the already-existing window is activated and a new tab is opened
+# and the completion signal is not sent.
+cat >> %{buildroot}%{_datadir}/applications/%{name}-browser.desktop << EOF
+StartupNotify=false
+EOF
 
 %if %{mdkversion} < 200900
 %post
