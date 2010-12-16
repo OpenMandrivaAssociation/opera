@@ -1,8 +1,8 @@
 %define name opera
-%define version 10.63
+%define version 11.00
 %define rel	1
 %define snap	0
-%define buildnb 6450
+%define buildnb 1156
 
 %define tarball_base %{name}-%{version}-%{buildnb}
 %define dirname %{tarball_base}.%{_arch}.linux
@@ -28,10 +28,9 @@ Release: 	%mkrel 0.%buildnb.%rel
 Release:	%mkrel %rel
 %endif
 %define shortver %(echo %version | tr -d .)
-Source0:	http://get.opera.com/pub/opera/linux/%{shortver}/%{tarball_base}.i386.linux.tar.bz2
-Source1: 	http://get.opera.com/pub/opera/linux/%{shortver}/%{tarball_base}.x86_64.linux.tar.bz2
+Source0:	http://get.opera.com/pub/opera/linux/%{shortver}/%{tarball_base}.i386.linux.tar.xz
+Source1: 	http://get.opera.com/pub/opera/linux/%{shortver}/%{tarball_base}.x86_64.linux.tar.xz
 Source2: 	bookmarks.adr
-Patch0:		opera-destdir.patch
 # StartupNotify does not work correctly when opera is already running;
 # the already-existing window is activated and a new tab is opened
 # and the completion signal is not sent.
@@ -52,13 +51,11 @@ Opera for Linux is an alternative feature-rich Web browser.
 %else
 %setup -q -n %dirname -T -b 0
 %endif
-%patch0 -p1
 %patch1 -p1
 
 %install
 rm -rf $RPM_BUILD_ROOT
-
-DESTDIR=%{buildroot} ./install --unattended --system --force
+./install --system --repackage %{buildroot}%{_prefix} --prefix %{_prefix}
 
 %if "%_lib" != "lib"
 mv %{buildroot}%{_prefix}/lib %{buildroot}%{_libdir}
@@ -67,8 +64,6 @@ sed -i 's,/usr/lib,%{_libdir},' %{buildroot}%{_bindir}/opera
 
 rm -rf rpmdocs
 mv %{buildroot}%{_docdir}/opera rpmdocs
-
-rm %{buildroot}%{_bindir}/uninstall-opera
 
 # install mandrakized bookmarks file
 install -m644 %{SOURCE2} %{buildroot}%_datadir/%name/defaults/bookmarks.adr
@@ -139,6 +134,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(fr) %{_datadir}/%name/locale/fr
 %lang(fr_CA) %{_datadir}/%name/locale/fr-CA
 %lang(fy) %{_datadir}/%name/locale/fy
+%lang(gd) %{_datadir}/%name/locale/gd
 %lang(hi) %{_datadir}/%name/locale/hi
 %lang(hu) %{_datadir}/%name/locale/hu
 %lang(hr) %{_datadir}/%name/locale/hr
@@ -168,4 +164,3 @@ rm -rf $RPM_BUILD_ROOT
 %lang(zh_CN) %{_datadir}/%name/locale/zh-cn
 %lang(zh_HK) %{_datadir}/%name/locale/zh-hk
 %lang(zh_TW) %{_datadir}/%name/locale/zh-tw
-
