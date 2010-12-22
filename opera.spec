@@ -1,6 +1,6 @@
 %define name opera
 %define version 11.00
-%define rel	1
+%define rel	2
 %define snap	0
 %define buildnb 1156
 
