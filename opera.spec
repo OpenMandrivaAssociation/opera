@@ -1,11 +1,10 @@
 %define name opera
-%define version 11.00
-%define rel	2
+%define version 11.01
+%define rel	1
 %define snap	0
-%define buildnb 1156
+%define buildnb 1190
 
 %define tarball_base %{name}-%{version}-%{buildnb}
-%define dirname %{tarball_base}.%{_arch}.linux
 
 %define arch_exclude_files_from_autoreq ^$
 %ifarch x86_64
@@ -43,9 +42,9 @@ Opera for Linux is an alternative feature-rich Web browser.
 
 %prep
 %ifarch x86_64
-%setup -q -n %dirname -T -b 1
+%setup -qTn %{name}-%{version}-%{buildnb}.%{_arch}.linux -b1
 %else
-%setup -q -n %dirname -T -b 0
+%setup -qTn %{name}-%{version}-%{buildnb}.%{_arch}.linux -b0
 %endif
 
 %install
@@ -136,7 +135,6 @@ rm -rf $RPM_BUILD_ROOT
 %lang(fr) %{_datadir}/%name/locale/fr
 %lang(fr_CA) %{_datadir}/%name/locale/fr-CA
 %lang(fy) %{_datadir}/%name/locale/fy
-%lang(gd) %{_datadir}/%name/locale/gd
 %lang(hi) %{_datadir}/%name/locale/hi
 %lang(hu) %{_datadir}/%name/locale/hu
 %lang(hr) %{_datadir}/%name/locale/hr
