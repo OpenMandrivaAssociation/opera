@@ -1,8 +1,8 @@
 %define name opera
-%define version 11.01
+%define version 11.10
 %define rel	1
 %define snap	0
-%define buildnb 1190
+%define buildnb 2092
 
 %define tarball_base %{name}-%{version}-%{buildnb}
 
@@ -108,6 +108,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_datadir}/opera
 %{_datadir}/opera/encoding.bin
 %{_datadir}/opera/*.dtd
+%{_datadir}/opera/*.sig
 %{_datadir}/opera/lngcode.txt
 %{_datadir}/opera/package-id.ini
 %{_datadir}/opera/defaults
@@ -121,6 +122,8 @@ rm -rf $RPM_BUILD_ROOT
 
 # langs
 %dir %{_datadir}/%{name}/locale
+%lang(af) %{_datadir}/%name/locale/af
+%lang(az) %{_datadir}/%name/locale/az
 %lang(be) %{_datadir}/%name/locale/be
 %lang(bg) %{_datadir}/%name/locale/bg
 %lang(cs) %{_datadir}/%name/locale/cs
@@ -135,6 +138,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(fr) %{_datadir}/%name/locale/fr
 %lang(fr_CA) %{_datadir}/%name/locale/fr-CA
 %lang(fy) %{_datadir}/%name/locale/fy
+%lang(gd) %{_datadir}/%name/locale/gd
 %lang(hi) %{_datadir}/%name/locale/hi
 %lang(hu) %{_datadir}/%name/locale/hu
 %lang(hr) %{_datadir}/%name/locale/hr
@@ -144,6 +148,8 @@ rm -rf $RPM_BUILD_ROOT
 %lang(ka) %{_datadir}/%name/locale/ka
 %lang(ko) %{_datadir}/%name/locale/ko
 %lang(lt) %{_datadir}/%name/locale/lt
+%lang(me) %{_datadir}/%name/locale/me
+%lang(ms) %{_datadir}/%name/locale/ms
 %lang(mk) %{_datadir}/%name/locale/mk
 %lang(nn) %{_datadir}/%name/locale/nn
 %lang(nb) %{_datadir}/%name/locale/nb
@@ -158,9 +164,11 @@ rm -rf $RPM_BUILD_ROOT
 %lang(sv) %{_datadir}/%name/locale/sv
 %lang(te) %{_datadir}/%name/locale/te
 %lang(ta) %{_datadir}/%name/locale/ta
+%lang(th) %{_datadir}/%name/locale/th
+%lang(tl) %{_datadir}/%name/locale/tl
 %lang(tr) %{_datadir}/%name/locale/tr
 %lang(uk) %{_datadir}/%name/locale/uk
+%lang(uz) %{_datadir}/%name/locale/uz
 %lang(vi) %{_datadir}/%name/locale/vi
 %lang(zh_CN) %{_datadir}/%name/locale/zh-cn
-%lang(zh_HK) %{_datadir}/%name/locale/zh-hk
 %lang(zh_TW) %{_datadir}/%name/locale/zh-tw
