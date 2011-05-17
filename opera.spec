@@ -122,8 +122,6 @@ rm -rf $RPM_BUILD_ROOT
 
 # langs
 %dir %{_datadir}/%{name}/locale
-%lang(af) %{_datadir}/%name/locale/af
-%lang(az) %{_datadir}/%name/locale/az
 %lang(be) %{_datadir}/%name/locale/be
 %lang(bg) %{_datadir}/%name/locale/bg
 %lang(cs) %{_datadir}/%name/locale/cs
@@ -148,8 +146,6 @@ rm -rf $RPM_BUILD_ROOT
 %lang(ka) %{_datadir}/%name/locale/ka
 %lang(ko) %{_datadir}/%name/locale/ko
 %lang(lt) %{_datadir}/%name/locale/lt
-%lang(me) %{_datadir}/%name/locale/me
-%lang(ms) %{_datadir}/%name/locale/ms
 %lang(mk) %{_datadir}/%name/locale/mk
 %lang(nn) %{_datadir}/%name/locale/nn
 %lang(nb) %{_datadir}/%name/locale/nb
@@ -164,11 +160,8 @@ rm -rf $RPM_BUILD_ROOT
 %lang(sv) %{_datadir}/%name/locale/sv
 %lang(te) %{_datadir}/%name/locale/te
 %lang(ta) %{_datadir}/%name/locale/ta
-%lang(th) %{_datadir}/%name/locale/th
-%lang(tl) %{_datadir}/%name/locale/tl
 %lang(tr) %{_datadir}/%name/locale/tr
 %lang(uk) %{_datadir}/%name/locale/uk
-%lang(uz) %{_datadir}/%name/locale/uz
 %lang(vi) %{_datadir}/%name/locale/vi
 %lang(zh_CN) %{_datadir}/%name/locale/zh-cn
 %lang(zh_TW) %{_datadir}/%name/locale/zh-tw
