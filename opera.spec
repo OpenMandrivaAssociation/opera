@@ -1,8 +1,8 @@
 %define name opera
-%define version 11.10
+%define version 11.11
 %define rel	1
 %define snap	0
-%define buildnb 2092
+%define buildnb 2109
 
 %define tarball_base %{name}-%{version}-%{buildnb}
 
