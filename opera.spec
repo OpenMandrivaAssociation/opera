@@ -1,8 +1,8 @@
 %define name opera
-%define version 11.11
+%define version 11.50
 %define rel	1
 %define snap	0
-%define buildnb 2109
+%define buildnb 1074
 
 %define tarball_base %{name}-%{version}-%{buildnb}
 
@@ -165,3 +165,14 @@ rm -rf $RPM_BUILD_ROOT
 %lang(vi) %{_datadir}/%name/locale/vi
 %lang(zh_CN) %{_datadir}/%name/locale/zh-cn
 %lang(zh_TW) %{_datadir}/%name/locale/zh-tw
+%lang(af) %{_datadir}/%name/locale/af
+%lang(az) %{_datadir}/%name/locale/az
+%lang(bn) %{_datadir}/%name/locale/bn
+%lang(me) %{_datadir}/%name/locale/me
+%lang(ms) %{_datadir}/%name/locale/ms
+%lang(pa) %{_datadir}/%name/locale/pa
+%lang(sw) %{_datadir}/%name/locale/sw
+%lang(th) %{_datadir}/%name/locale/th
+%lang(tl) %{_datadir}/%name/locale/tl
+%lang(uz) %{_datadir}/%name/locale/uz
+%lang(zu) %{_datadir}/%name/locale/zu
