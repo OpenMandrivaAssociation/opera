@@ -1,10 +1,5 @@
-%define name opera
-%define version 11.50
-%define rel	1
 %define snap	0
-%define buildnb 1074
-
-%define tarball_base %{name}-%{version}-%{buildnb}
+%define buildnb 1100
 
 %define arch_exclude_files_from_autoreq ^$
 %ifarch x86_64
@@ -19,21 +14,21 @@
 %define _exclude_files_from_autoreq %{arch_exclude_files_from_autoreq}\\|%{common_exclude_files_from_autoreq}
 
 Summary:	Opera Web Browser for Linux
-Name: 		%{name}
-Version: 	%{version}
+Name: 		opera
+Version: 	11.52
 %if %snap
-Release: 	%mkrel 0.%buildnb.%rel
+Release: 	%mkrel -c %buildnb 1
 %else
-Release:	%mkrel %rel
+Release:	1
 %endif
 %define shortver %(echo %version | tr -d .)
-Source0:	http://get.opera.com/pub/opera/linux/%{shortver}/%{tarball_base}.i386.linux.tar.xz
-Source1: 	http://get.opera.com/pub/opera/linux/%{shortver}/%{tarball_base}.x86_64.linux.tar.xz
+Source0:	http://get.opera.com/pub/opera/linux/%{shortver}/%{name}-%{version}-%{buildnb}.i386.linux.tar.xz
+Source1: 	http://get.opera.com/pub/opera/linux/%{shortver}/%{name}-%{version}-%{buildnb}.x86_64.linux.tar.xz
 Source2: 	bookmarks.adr
 License: 	Freeware
 Url:		http://www.opera.com/
 Group: 		Networking/WWW
-BuildRoot: 	%{_tmppath}/%{name}-buildroot
+
 ExclusiveArch:	%ix86 x86_64
 BuildRequires:	desktop-file-utils
 
@@ -48,7 +43,7 @@ Opera for Linux is an alternative feature-rich Web browser.
 %endif
 
 %install
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 ./install --system --repackage %{buildroot}%{_prefix} --prefix %{_prefix}
 
 %if "%_lib" != "lib"
@@ -69,9 +64,7 @@ desktop-file-install --dir %{buildroot}%{_datadir}/applications \
 # StartupNotify does not work correctly when opera is already running;
 # the already-existing window is activated and a new tab is opened
 # and the completion signal is not sent.
-cat >> %{buildroot}%{_datadir}/applications/%{name}-browser.desktop << EOF
-StartupNotify=false
-EOF
+sed -i -e 's/StartupNotify=.*/StartupNotify=false/' %{buildroot}%{_datadir}/applications/%{name}-browser.desktop
 
 %if %{mdkversion} < 200900
 %post
@@ -88,7 +81,7 @@ EOF
 %endif
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
