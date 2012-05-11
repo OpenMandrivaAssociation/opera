@@ -1,5 +1,5 @@
 %define snap	0
-%define buildnb 1100
+%define buildnb 1403
 
 %define arch_exclude_files_from_autoreq ^$
 %ifarch x86_64
@@ -14,20 +14,20 @@
 %define _exclude_files_from_autoreq %{arch_exclude_files_from_autoreq}\\|%{common_exclude_files_from_autoreq}
 
 Summary:	Opera Web Browser for Linux
-Name: 		opera
-Version: 	11.52
+Name:		opera
+Version:	11.64
 %if %snap
-Release: 	%mkrel -c %buildnb 1
+Release:	%mkrel -c %buildnb 1
 %else
 Release:	1
 %endif
-%define shortver %(echo %version | tr -d .)
+%define	shortver %(echo %version | tr -d .)
 Source0:	http://get.opera.com/pub/opera/linux/%{shortver}/%{name}-%{version}-%{buildnb}.i386.linux.tar.xz
-Source1: 	http://get.opera.com/pub/opera/linux/%{shortver}/%{name}-%{version}-%{buildnb}.x86_64.linux.tar.xz
-Source2: 	bookmarks.adr
-License: 	Freeware
+Source1:	http://get.opera.com/pub/opera/linux/%{shortver}/%{name}-%{version}-%{buildnb}.x86_64.linux.tar.xz
+Source2:	bookmarks.adr
+License:	Freeware
 Url:		http://www.opera.com/
-Group: 		Networking/WWW
+Group:		Networking/WWW
 
 ExclusiveArch:	%ix86 x86_64
 BuildRequires:	desktop-file-utils
@@ -41,6 +41,9 @@ Opera for Linux is an alternative feature-rich Web browser.
 %else
 %setup -qTn %{name}-%{version}-%{buildnb}.%{_arch}.linux -b0
 %endif
+
+%build
+echo "Hello, i'm a build section"
 
 %install
 rm -rf %{buildroot}
@@ -101,7 +104,9 @@ rm -rf %{buildroot}
 %dir %{_datadir}/opera
 %{_datadir}/opera/encoding.bin
 %{_datadir}/opera/*.dtd
+%{_datadir}/opera/*.dat
 %{_datadir}/opera/*.sig
+%{_datadir}/opera/*.xml
 %{_datadir}/opera/lngcode.txt
 %{_datadir}/opera/package-id.ini
 %{_datadir}/opera/defaults
@@ -110,6 +115,7 @@ rm -rf %{buildroot}
 %{_datadir}/opera/skin
 %{_datadir}/opera/styles
 %{_datadir}/opera/ui
+%{_datadir}/opera/region
 %{_datadir}/opera/unite
 %{_datadir}/opera/locale/en
 
