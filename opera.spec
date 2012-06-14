@@ -11,7 +11,11 @@
 # automatically when present.
 %define common_exclude_files_from_autoreq ^%{_libdir}/%{name}/libopera.\\+\\.so$
 
+%if %{_use_internal_dependency_generator}
+%define	__noautoreqfiles (%{arch_exclude_files_from_autoreq}|%{common_exclude_files_from_autoreq})
+%else
 %define _exclude_files_from_autoreq %{arch_exclude_files_from_autoreq}\\|%{common_exclude_files_from_autoreq}
+%endif
 
 Summary:	Opera Web Browser for Linux
 Name:		opera
