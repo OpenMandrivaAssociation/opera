@@ -1,5 +1,5 @@
 %define snap	0
-%define buildnb 1403
+%define buildnb 1467
 
 %define arch_exclude_files_from_autoreq ^$
 %ifarch x86_64
@@ -15,7 +15,7 @@
 
 Summary:	Opera Web Browser for Linux
 Name:		opera
-Version:	11.64
+Version:	12.00
 %if %snap
 Release:	%mkrel -c %buildnb 1
 %else
@@ -90,14 +90,14 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %doc rpmdocs/*
 %_bindir/opera
-%_bindir/opera-widget-manager
+# % _bindir/opera-widget-manager
 %_libdir/opera
 
 %_iconsdir/hicolor/*/apps/%{name}-*.*
 %_iconsdir/hicolor/*/mimetypes/%{name}-*.*
 %_datadir/applications/%{name}-browser.desktop
-%_datadir/applications/%{name}-widget-installer.desktop
-%_datadir/applications/%{name}-widget-manager.desktop
+#% _ datadir/applications/ % {name}-widget-installer.desktop
+#% _ datadir/applications/ % {name}-widget-manager.desktop
 %_datadir/mime/packages/%{name}-*.xml
 %_mandir/man1/opera*
 
@@ -111,12 +111,12 @@ rm -rf %{buildroot}
 %{_datadir}/opera/package-id.ini
 %{_datadir}/opera/defaults
 %{_datadir}/opera/extra
-%{_datadir}/opera/package
+#% {_datadir}/opera/package
 %{_datadir}/opera/skin
 %{_datadir}/opera/styles
 %{_datadir}/opera/ui
 %{_datadir}/opera/region
-%{_datadir}/opera/unite
+#% {_datadir}/opera/unite
 %{_datadir}/opera/locale/en
 
 # langs
@@ -125,6 +125,11 @@ rm -rf %{buildroot}
 %lang(bg) %{_datadir}/%name/locale/bg
 %lang(cs) %{_datadir}/%name/locale/cs
 %lang(da) %{_datadir}/%name/locale/da
+%lang(he) %{_datadir}/%name/locale/he
+%lang(kk) %{_datadir}/%name/locale/kk
+%lang(ur) %{_datadir}/%name/locale/ur
+%lang(fa) %{_datadir}/%name/locale/fa
+%lang(ar) %{_datadir}/%name/locale/ar
 %lang(de) %{_datadir}/%name/locale/de
 %lang(el) %{_datadir}/%name/locale/el
 %lang(en_GB) %{_datadir}/%name/locale/en-GB
