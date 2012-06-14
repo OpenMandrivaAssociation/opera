@@ -4,7 +4,7 @@
 %define arch_exclude_files_from_autoreq ^$
 %ifarch x86_64
 # Exclude 32-bit requires on x86_64; plugins will pull them.
-%define arch_exclude_files_from_autoreq ^%{_libdir}/%{name}/operapluginwrapper-ia32-linux$
+%define arch_exclude_files_from_autoreq ^%{_libdir}/%{name}/pluginwrapper/operapluginwrapper-ia32-linux$
 %endif
 
 # Exclude requires on GTK/KDE toolkits, they are optional and used
