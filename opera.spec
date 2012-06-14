@@ -17,6 +17,9 @@
 %define _exclude_files_from_autoreq %{arch_exclude_files_from_autoreq}\\|%{common_exclude_files_from_autoreq}
 %endif
 
+%define debug_package	%{nil}
+%define __check_files	%{nil}
+
 Summary:	Opera Web Browser for Linux
 Name:		opera
 Version:	12.00
