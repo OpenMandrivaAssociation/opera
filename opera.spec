@@ -1,5 +1,5 @@
 %define snap	0
-%define buildnb 1578
+%define buildnb 1615
 
 %define arch_exclude_files_from_autoreq ^$
 %ifarch x86_64
@@ -22,15 +22,15 @@
 
 Summary:	Opera Web Browser for Linux
 Name:		opera
-Version:	12.02
+Version:	12.10
 %if %snap
 Release:	%mkrel -c %buildnb 1
 %else
 Release:	1
 %endif
 %define	shortver %(echo %version | tr -d .)
-Source0:	http://get.opera.com/pub/opera/linux/%{shortver}/%{name}-%{version}-%{buildnb}.i386.linux.tar.xz
-Source1:	http://get.opera.com/pub/opera/linux/%{shortver}/%{name}-%{version}-%{buildnb}.x86_64.linux.tar.xz
+Source0:	http://get.opera.com/pub/opera/linux/%{shortver}b1/%{name}-%{version}-%{buildnb}.i386.linux.tar.xz
+Source1:	http://get.opera.com/pub/opera/linux/%{shortver}b1/%{name}-%{version}-%{buildnb}.x86_64.linux.tar.xz
 Source2:	bookmarks.adr
 License:	Freeware
 Url:		http://www.opera.com/
@@ -76,25 +76,7 @@ desktop-file-install --dir %{buildroot}%{_datadir}/applications \
 # and the completion signal is not sent.
 sed -i -e 's/StartupNotify=.*/StartupNotify=false/' %{buildroot}%{_datadir}/applications/%{name}-browser.desktop
 
-%if %{mdkversion} < 200900
-%post
-%{update_icon_cache hicolor}
-%{update_desktop_database}
-%{update_mime_database}
-%{update_menus}
-
-%postun
-%{clean_icon_cache hicolor}
-%{clean_desktop_database}
-%{clean_mime_database}
-%{clean_menus}
-%endif
-
-%clean
-rm -rf %{buildroot}
-
 %files
-%defattr(-,root,root)
 %doc rpmdocs/*
 %_bindir/opera
 %_libdir/opera
