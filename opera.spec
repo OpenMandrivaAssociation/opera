@@ -26,7 +26,7 @@ Version:	12.10
 %if %snap
 Release:	%mkrel -c %buildnb 1
 %else
-Release:	1
+Release:	2
 %endif
 %define	shortver %(echo %version | tr -d .)
 Source0:	http://get.opera.com/pub/opera/linux/%{shortver}b1/%{name}-%{version}-%{buildnb}.i386.linux.tar.xz
