@@ -1,5 +1,5 @@
 %define snap	0
-%define buildnb 1615
+%define buildnb 1860
 
 %define arch_exclude_files_from_autoreq ^$
 %ifarch x86_64
@@ -22,15 +22,15 @@
 
 Summary:	Opera Web Browser for Linux
 Name:		opera
-Version:	12.10
+Version:	12.16
 %if %snap
 Release:	%mkrel -c %buildnb 1
 %else
-Release:	3
+Release:	1
 %endif
 %define	shortver %(echo %version | tr -d .)
-Source0:	http://get.opera.com/pub/opera/linux/%{shortver}b1/%{name}-%{version}-%{buildnb}.i386.linux.tar.xz
-Source1:	http://get.opera.com/pub/opera/linux/%{shortver}b1/%{name}-%{version}-%{buildnb}.x86_64.linux.tar.xz
+Source0:	http://get.opera.com/pub/opera/linux/%{shortver}/%{name}-%{version}-%{buildnb}.i386.linux.tar.xz
+Source1:	http://get.opera.com/pub/opera/linux/%{shortver}/%{name}-%{version}-%{buildnb}.x86_64.linux.tar.xz
 Source2:	bookmarks.adr
 License:	Freeware
 Url:		http://www.opera.com/
